@@ -1,4 +1,4 @@
-package se.erikmalm.exceptions;
+package se.experiment.exceptions;
 
 public class AdhocDBException extends Exception{
     public AdhocDBException(String message) {

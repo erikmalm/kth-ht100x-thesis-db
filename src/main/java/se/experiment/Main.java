@@ -1,12 +1,20 @@
-package se.erikmalm;
+package se.experiment;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import se.experiment.controller.Controller;
+import se.experiment.exceptions.AdhocDBException;
+import se.experiment.view.BlockingInterpreter;
 
 public class Main {
     public static void main(String[] args) {
+
+        try {
+            new BlockingInterpreter(new Controller()).handleCmds();
+        } catch (AdhocDBException bdbe) {
+            System.out.println("Could not connect to Soundgood database.");
+            bdbe.printStackTrace();
+        }
+
+        /*
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -38,6 +46,8 @@ public class Main {
             System.err.println(e);
             System.exit(-1);
         }
+
+         */
 
 
     }
