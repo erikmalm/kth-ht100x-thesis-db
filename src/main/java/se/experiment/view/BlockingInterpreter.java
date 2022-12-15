@@ -32,8 +32,10 @@ public class BlockingInterpreter {
 
     private void setupMessages() {
         errorMessageForRun =
-                "Command should be on format RUN [DB] [READ]\n" +
-                "Example: RUN ADHOC READ";
+                "Command should be on format RUN [DB] [READ] <OPTIONAL: NUMBER>\n" +
+                "[NOTE] Test number is optional. Default test will be number 1.\n" +
+                "[EXAMPLE] RUN ADHOC READ\n" +
+                "[EXAMPLE] RUN ADHOC READ 2";
     }
 
     /**
@@ -108,15 +110,26 @@ public class BlockingInterpreter {
                         // VARIABLES FOR TEST RUN
                         String db = cmdLine.getParameter(0);
                         String type =  cmdLine.getParameter(1);
+                        String param = cmdLine.getParameter(2);
 
                         if (ifNullOrEmpty(db, type)) {
                             out(errorMessageForRun);
                             break;
                         }
 
+                        int testNumber = 1;
+
+                        if (param != null) {
+                            testNumber = Integer.parseInt(param);
+                        }
+
+
+
 
 
                         System.out.println("Run test on: " + db + " \tType of test: " + type);//
+
+                        System.out.println("Test number: " + testNumber);
 
                         break;
 
