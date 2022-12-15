@@ -3,6 +3,7 @@ package se.experiment.view;
 
 import se.experiment.controller.Controller;
 import se.experiment.model.AdhocIndividual;
+import se.experiment.model.AdhocTestResults;
 import se.experiment.model.IndividualDTO;
 
 import java.sql.SQLException;
@@ -16,9 +17,12 @@ public class BlockingInterpreter {
     private Controller controller;
     private boolean keepReceivingCmds = false;
 
+    private AdhocTestResults testResults;
+
     // DEFAULT MESSAGES
 
     String errorMessageForRun;
+    String errorMessageForParseTestCommand;
 
     /**
      * Creates a new instance that will use the specified controller for all operations.
@@ -32,10 +36,15 @@ public class BlockingInterpreter {
 
     private void setupMessages() {
         errorMessageForRun =
-                "Command should be on format RUN [DB] [READ] <OPTIONAL: NUMBER>\n" +
+                "Error: Command should be on format RUN [DB] [READ] <OPTIONAL: NUMBER>\n" +
                 "[NOTE] Test number is optional. Default test will be number 1.\n" +
                 "[EXAMPLE] RUN ADHOC READ\n" +
                 "[EXAMPLE] RUN ADHOC READ 2";
+
+        errorMessageForParseTestCommand =
+                "Error: Missing correct input for test command. Command should be on format: RUN [DB] [READ] <OPTIONAL: NUMBER>\n" +
+                "[NOTE] Incorrect database [DB] in test command.\n" +
+                "[NOTE] Available databases are: ADHOC, NORM";
     }
 
     /**
@@ -123,13 +132,7 @@ public class BlockingInterpreter {
                             testNumber = Integer.parseInt(param);
                         }
 
-
-
-
-
-                        System.out.println("Run test on: " + db + " \tType of test: " + type);//
-
-                        System.out.println("Test number: " + testNumber);
+                        parseTestCommand(db, type, testNumber);
 
                         break;
 
@@ -160,13 +163,44 @@ public class BlockingInterpreter {
         }
     }
 
+    private void parseTestCommand(String db, String type, int testNumber) {
+
+        switch(db) {
+            case "ADHOC":
+                runAdhocTests(type,testNumber);
+                break;
+            default:
+                out(errorMessageForParseTestCommand);
+                break;
+        }
+    }
+
+    private void runAdhocTests(String type, int testNumber) {
+        switch(type) {
+            case "READ":
+                runAdhocReadTest(testNumber);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void runAdhocReadTest(int testNumber) {
+        switch(testNumber) {
+            case 1:
+                testResults = controller.runAdhocReadTestOne();
+                break;
+            default:
+                break;
+        }
+    }
+
     private boolean ifNullOrEmpty(String db, String type) {
         return db == null || type == null || Objects.equals(db,"") || Objects.equals(type,"");
     }
 
-    private void out(String errorMessage) {
-        System.out.print("Error: ");
-        System.out.println(errorMessage);
+    private void out(String message) {
+        System.out.println(message);
     }
 
 
