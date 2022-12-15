@@ -2,8 +2,8 @@ package se.experiment.view;
 
 
 import se.experiment.controller.Controller;
-import se.experiment.model.AdhocIndividual;
-import se.experiment.model.AdhocTestResults;
+import se.experiment.exceptions.AdhocDBException;
+import se.experiment.model.Test;
 import se.experiment.model.IndividualDTO;
 
 import java.sql.SQLException;
@@ -17,7 +17,8 @@ public class BlockingInterpreter {
     private Controller controller;
     private boolean keepReceivingCmds = false;
 
-    private AdhocTestResults testResults;
+    private boolean shouldPrintResults = true;
+
 
     // DEFAULT MESSAGES
 
@@ -36,15 +37,17 @@ public class BlockingInterpreter {
 
     private void setupMessages() {
         errorMessageForRun =
-                "Error: Command should be on format RUN [DB] [READ] <OPTIONAL: NUMBER>\n" +
-                "[NOTE] Test number is optional. Default test will be number 1.\n" +
-                "[EXAMPLE] RUN ADHOC READ\n" +
-                "[EXAMPLE] RUN ADHOC READ 2";
+                "Error: Command should be on format:\n" +
+                        "TEST [DB] [READ] <OPTIONAL: TEST NUMBER> <OPTIONAL: AMOUNT>\n" +
+                        "[NOTE] Test number and test amount are optional. Default test and amount will be number 1.\n" +
+                        "[EXAMPLE] RUN ADHOC READ\n" +
+                        "[EXAMPLE] RUN ADHOC READ 1 10";
 
         errorMessageForParseTestCommand =
-                "Error: Missing correct input for test command. Command should be on format: RUN [DB] [READ] <OPTIONAL: NUMBER>\n" +
-                "[NOTE] Incorrect database [DB] in test command.\n" +
-                "[NOTE] Available databases are: ADHOC, NORM";
+                "Error: Missing correct input for test command. Command should be on format:\n" +
+                        "TEST [DB] [READ] <OPTIONAL: NUMBER>\n" +
+                        "[NOTE] Incorrect database [DB] in test command.\n" +
+                        "[NOTE] Available databases are: ADHOC, NORM";
     }
 
     /**
@@ -108,31 +111,45 @@ public class BlockingInterpreter {
 
 
 
-                    case AVAILABLE:
+                    case PRINT:
+                        shouldPrintResults = !shouldPrintResults;
+                        if (shouldPrintResults) out("PRINT: ON");
+                        else out("PRINT: OFF");
 
 //
 
                         break;
 
-                    case RUN:
+                    case TEST:
 
                         // VARIABLES FOR TEST RUN
-                        String db = cmdLine.getParameter(0);
-                        String type =  cmdLine.getParameter(1);
-                        String param = cmdLine.getParameter(2);
+                        String dbs = cmdLine.getParameter(0);
+                        String typ = cmdLine.getParameter(1);
+                        String prm = cmdLine.getParameter(2);
+                        String amt = cmdLine.getParameter(3);
 
-                        if (ifNullOrEmpty(db, type)) {
+                        if (ifNullOrEmpty(dbs, typ)) {
                             out(errorMessageForRun);
                             break;
                         }
 
-                        int testNumber = 1;
+                        int tstNumber = 1;
+                        int tstAmount = 1;
 
-                        if (param != null) {
-                            testNumber = Integer.parseInt(param);
+                        if (prm != null) {
+                            tstNumber = Integer.parseInt(prm);
                         }
 
-                        parseTestCommand(db, type, testNumber);
+                        if (amt != null) {
+                            tstAmount = Integer.parseInt(amt);
+                        }
+
+                        Test current = new Test(typ, dbs, tstNumber, tstAmount);
+
+                        parseTestCommand(current);
+
+                        endTest(current);
+
 
                         break;
 
@@ -163,11 +180,14 @@ public class BlockingInterpreter {
         }
     }
 
-    private void parseTestCommand(String db, String type, int testNumber) {
 
-        switch(db) {
+
+    private void parseTestCommand(Test test) {
+
+        switch(test.getDb()) {
             case "ADHOC":
-                runAdhocTests(type,testNumber);
+                System.out.println("Setup test on " + test.getDb() + " on operation " + test.getType() + ", " + test.getAmountOfTests() + " number of times");
+                runAdhocTests(test);
                 break;
             default:
                 out(errorMessageForParseTestCommand);
@@ -175,20 +195,39 @@ public class BlockingInterpreter {
         }
     }
 
-    private void runAdhocTests(String type, int testNumber) {
-        switch(type) {
+    private void runAdhocTests(Test test) {
+        switch(test.getType()) {
             case "READ":
-                runAdhocReadTest(testNumber);
+                runAdhocReadTest(test);
                 break;
+            case "WRITE":
+                runAdhocWriteTest(test);
             default:
                 break;
         }
     }
 
-    private void runAdhocReadTest(int testNumber) {
-        switch(testNumber) {
+    private void runAdhocWriteTest(Test test) {
+        switch (test.getTestNumber()) {
             case 1:
-                testResults = controller.runAdhocReadTestOne();
+                try {
+                    controller.runAdhocWriteTestOne(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            default:
+                break;
+        }
+    }
+
+    private void runAdhocReadTest(Test test)  {
+        switch(test.getTestNumber()) {
+            case 1:
+                try {
+                    controller.runAdhocReadTestOne(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
                 break;
             default:
                 break;
@@ -201,6 +240,11 @@ public class BlockingInterpreter {
 
     private void out(String message) {
         System.out.println(message);
+    }
+
+    private void endTest(Test test) {
+        if (shouldPrintResults) System.out.println(test);
+        test = null;
     }
 
 

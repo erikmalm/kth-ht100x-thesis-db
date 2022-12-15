@@ -13,7 +13,7 @@ public enum Command {
     /**
      * Runs the experiment
      */
-    RUN,
+    TEST,
 
     /**
      * Lists all commands.
@@ -24,7 +24,7 @@ public enum Command {
     /**
      * List all available instruments
      */
-    AVAILABLE,
+    PRINT,
 
     /**
      * Find a specific rental instrument

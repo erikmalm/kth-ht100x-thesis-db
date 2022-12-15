@@ -2,6 +2,7 @@ package se.experiment.integration;
 
 import se.experiment.exceptions.AdhocDBException;
 import se.experiment.model.AdhocIndividual;
+import se.experiment.model.Test;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,20 +15,46 @@ public class AdhocDAO {
     private final String DB_PASSWORD = "adnin";
     private Connection connection;
 
+    private static final String UNIQUE_PERSONAL_NUMBER = "20000101-1234";
+
     // TABLES
     private static final String INDIVIDUALS_TABLE_NAME = "public.hallbarheter_privat_id";
+
 
     // COLUMNS
     private static final String ID_COL_NAME = "id";
     private static final String PERSONAL_NUMBER_COL_NAME = "person_id";
+    private static final String FUND_CAPITAL_COL_NAME = "fondkapital";
+
 
     //STATEMENTS
     private PreparedStatement getAllAdhocIndividuals;
+    private PreparedStatement adHocReadTestOne;
+    private PreparedStatement adHocWriteTestOne;
+    private PreparedStatement resetAdHocWriteTestOne;
 
     private void prepareStatements() throws SQLException {
 
         getAllAdhocIndividuals = connection.prepareStatement(
-                "SELECT * FROM " + INDIVIDUALS_TABLE_NAME
+                "SELECT * " +
+                        "FROM " + INDIVIDUALS_TABLE_NAME
+        );
+
+        adHocReadTestOne = connection.prepareStatement(
+                "SELECT * " +
+                        "FROM " + INDIVIDUALS_TABLE_NAME + " " +
+                        "ORDER BY " + FUND_CAPITAL_COL_NAME + " ASC " +
+                        "LIMIT 1"
+        );
+
+        adHocWriteTestOne = connection.prepareStatement(
+                "INSERT INTO " + INDIVIDUALS_TABLE_NAME + " " +
+                        "(" + PERSONAL_NUMBER_COL_NAME + ") " +
+                        "VALUES " + "('"+ UNIQUE_PERSONAL_NUMBER + "')"
+        );
+        resetAdHocWriteTestOne = connection.prepareStatement(
+                "DELETE FROM " + INDIVIDUALS_TABLE_NAME + " " +
+                        "WHERE " + PERSONAL_NUMBER_COL_NAME + " = '" + UNIQUE_PERSONAL_NUMBER + "'"
         );
     }
 
@@ -53,7 +80,10 @@ public class AdhocDAO {
         List<AdhocIndividual> individuals = new ArrayList<>();
         ResultSet result = null;
 
+
+
         try {
+            //long start = System.nanoTime();
             result = getAllAdhocIndividuals.executeQuery();
             individuals = new ArrayList<AdhocIndividual>();
 
@@ -62,8 +92,10 @@ public class AdhocDAO {
                         result.getString(ID_COL_NAME),
                         result.getString(PERSONAL_NUMBER_COL_NAME))
                 );
-
             }
+
+            //long end = System.nanoTime();
+            //test.addExecutionTime(end - start);
 
         } catch (SQLException e) {
             handleException(failureMessage, e);
@@ -100,4 +132,59 @@ public class AdhocDAO {
     }
 
 
+    public void runAdhocReadTestOne(Test test) throws AdhocDBException {
+
+        String failureMessage = "Failed to run READ test number one on Adhoc Database";
+        List<AdhocIndividual> individuals = new ArrayList<>();
+        ResultSet result = null;
+
+        try {
+            long start = System.nanoTime();
+            result = adHocReadTestOne.executeQuery();
+            individuals = new ArrayList<AdhocIndividual>();
+
+            while (result.next()) {
+                individuals.add(new AdhocIndividual(
+                        result.getString(ID_COL_NAME),
+                        result.getString(PERSONAL_NUMBER_COL_NAME))
+                );
+            }
+
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(failureMessage, e);
+        } finally {
+            closeResultSet(failureMessage, result);
+        }
+    }
+
+
+    public void runAdhocWriteTestOne(Test test) throws AdhocDBException {
+
+        String failureMessage = "Failed to run WRITE test number one on Adhoc Database";
+        List<AdhocIndividual> individuals = new ArrayList<>();
+        int updatedRows = 0;
+
+        try {
+            long start = System.nanoTime();
+            updatedRows = adHocWriteTestOne.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(failureMessage, e);
+        }
+
+        // Restore conditions
+        try {
+            updatedRows = resetAdHocWriteTestOne.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(failureMessage, e);
+        }
+    }
 }

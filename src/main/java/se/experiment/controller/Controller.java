@@ -2,8 +2,7 @@ package se.experiment.controller;
 
 import se.experiment.exceptions.AdhocDBException;
 import se.experiment.integration.AdhocDAO;
-import se.experiment.model.AdhocIndividual;
-import se.experiment.model.AdhocTestResults;
+import se.experiment.model.Test;
 import se.experiment.model.IndividualDTO;
 
 import java.util.List;
@@ -17,7 +16,6 @@ public class Controller {
     }
 
     public List<? extends IndividualDTO> getAllAdhocIndividuals() throws Exception {
-
         try {
             return adhocDb.getAllIndividuals();
         } catch (Exception e ) {
@@ -25,8 +23,13 @@ public class Controller {
         }
     }
 
-    public AdhocTestResults runAdhocReadTestOne() {
+    public void runAdhocReadTestOne(Test test) throws AdhocDBException {
+        for (int i = 0; i < test.getAmountOfTests(); i ++)
+            adhocDb.runAdhocReadTestOne(test);
+    }
 
-        return new AdhocTestResults();
+    public void runAdhocWriteTestOne(Test test) throws AdhocDBException {
+        for (int i = 0; i < test.getAmountOfTests(); i ++)
+            adhocDb.runAdhocWriteTestOne(test);
     }
 }

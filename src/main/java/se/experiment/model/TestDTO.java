@@ -2,14 +2,19 @@ package se.experiment.model;
 
 import java.util.List;
 
-public interface TestResultsDTO {
+public interface TestDTO {
 
-    public List<Integer> getListOfExecutionTimes();
+    public List<Long> getListOfExecutionTimes();
 
     public String getType();
 
     public int getAmountOfTests();
 
     public String toString();
+
+    public String getDb();
+
+    public int getTestNumber();
+
 
 }
