@@ -184,9 +184,10 @@ public class BlockingInterpreter {
 
     private void parseTestCommand(Test test) {
 
+        System.out.println("Setup test on " + test.getDb() + " on operation " + test.getType() + ", " + test.getAmountOfTests() + " number of times");
+
         switch(test.getDb()) {
             case "ADHOC":
-                System.out.println("Setup test on " + test.getDb() + " on operation " + test.getType() + ", " + test.getAmountOfTests() + " number of times");
                 runAdhocTests(test);
                 break;
             default:
@@ -200,8 +201,31 @@ public class BlockingInterpreter {
             case "READ":
                 runAdhocReadTest(test);
                 break;
+
             case "WRITE":
                 runAdhocWriteTest(test);
+                break;
+
+            case "UPDATE":
+                runAdhocUpdateTest(test);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void runAdhocUpdateTest(Test test) {
+        switch (test.getTestNumber()) {
+            case 1:
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i ++)
+                        controller.runAdhocUpdateTestOne(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+                break;
+
             default:
                 break;
         }
@@ -211,10 +235,13 @@ public class BlockingInterpreter {
         switch (test.getTestNumber()) {
             case 1:
                 try {
-                    controller.runAdhocWriteTestOne(test);
+                    for (int i = 0; i < test.getAmountOfTests(); i ++)
+                        controller.runAdhocWriteTestOne(test);
                 } catch (AdhocDBException e) {
                     System.out.println("Test failed " + e.getMessage());
                 }
+                break;
+
             default:
                 break;
         }
@@ -224,11 +251,13 @@ public class BlockingInterpreter {
         switch(test.getTestNumber()) {
             case 1:
                 try {
-                    controller.runAdhocReadTestOne(test);
+                    for (int i = 0; i < test.getAmountOfTests(); i ++)
+                        controller.runAdhocReadTestOne(test);
                 } catch (AdhocDBException e) {
                     System.out.println("Test failed " + e.getMessage());
                 }
                 break;
+
             default:
                 break;
         }

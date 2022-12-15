@@ -58,7 +58,7 @@ public class Test implements TestDTO {
         sb.append("{");
 
         for (Long l : listOfExecutionTimes) {
-            sb.append(l);
+            sb.append(l * Math.pow(10,-6));
 
             if (pos++ != amountOfRuns) sb.append(", ");
             else sb.append("}");

@@ -31,7 +31,13 @@ public class AdhocDAO {
     private PreparedStatement getAllAdhocIndividuals;
     private PreparedStatement adHocReadTestOne;
     private PreparedStatement adHocWriteTestOne;
-    private PreparedStatement resetAdHocWriteTestOne;
+    private PreparedStatement resetAdhocWriteTestOne;
+
+
+    private PreparedStatement prepareAdhocUpdateTestOne;
+    private PreparedStatement adhocUpdateTestOne;
+    private PreparedStatement resetAdhocUpdateTestOne;
+
 
     private void prepareStatements() throws SQLException {
 
@@ -52,10 +58,21 @@ public class AdhocDAO {
                         "(" + PERSONAL_NUMBER_COL_NAME + ") " +
                         "VALUES " + "('"+ UNIQUE_PERSONAL_NUMBER + "')"
         );
-        resetAdHocWriteTestOne = connection.prepareStatement(
+        resetAdhocWriteTestOne = connection.prepareStatement(
                 "DELETE FROM " + INDIVIDUALS_TABLE_NAME + " " +
                         "WHERE " + PERSONAL_NUMBER_COL_NAME + " = '" + UNIQUE_PERSONAL_NUMBER + "'"
         );
+
+        adhocUpdateTestOne = connection.prepareStatement(
+                "UPDATE " + INDIVIDUALS_TABLE_NAME + " " +
+                        "SET " + FUND_CAPITAL_COL_NAME + " = 0 " +
+                        "WHERE " + PERSONAL_NUMBER_COL_NAME + " = '" + UNIQUE_PERSONAL_NUMBER + "'"
+        );
+
+        // These are used again in order to run the update test, but named for clarity
+        prepareAdhocUpdateTestOne = adHocWriteTestOne;
+        resetAdhocUpdateTestOne = resetAdhocWriteTestOne;
+
     }
 
     public AdhocDAO() throws AdhocDBException {
@@ -143,12 +160,12 @@ public class AdhocDAO {
             result = adHocReadTestOne.executeQuery();
             individuals = new ArrayList<AdhocIndividual>();
 
-            while (result.next()) {
+            /*while (result.next()) {
                 individuals.add(new AdhocIndividual(
                         result.getString(ID_COL_NAME),
                         result.getString(PERSONAL_NUMBER_COL_NAME))
                 );
-            }
+            }*/
 
             long end = System.nanoTime();
             test.addExecutionTime(end - start);
@@ -180,11 +197,45 @@ public class AdhocDAO {
 
         // Restore conditions
         try {
-            updatedRows = resetAdHocWriteTestOne.executeUpdate();
+            updatedRows = resetAdhocWriteTestOne.executeUpdate();
             connection.commit();
 
         } catch (SQLException e) {
             handleException(failureMessage, e);
         }
+    }
+
+    public void runAdhocUpdateTestOne(Test test) throws AdhocDBException {
+
+        String failureMessage = "Failed to run UPDATE test number one on Adhoc Database";
+        List<AdhocIndividual> individuals = new ArrayList<>();
+        int updatedRows = 0;
+
+        // Prepare test and conditions
+        try {
+            updatedRows = adHocWriteTestOne.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            handleException(failureMessage, e);
+        }
+
+        // Run test
+        try {
+            long start = System.nanoTime();
+            updatedRows = adhocUpdateTestOne.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+            // Restore conditions
+            updatedRows = resetAdhocWriteTestOne.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(failureMessage, e);
+        }
+
+
+
     }
 }

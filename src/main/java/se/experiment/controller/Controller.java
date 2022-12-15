@@ -32,4 +32,8 @@ public class Controller {
         for (int i = 0; i < test.getAmountOfTests(); i ++)
             adhocDb.runAdhocWriteTestOne(test);
     }
+
+    public void runAdhocUpdateTestOne(Test test) throws AdhocDBException {
+        adhocDb.runAdhocUpdateTestOne(test);
+    }
 }
