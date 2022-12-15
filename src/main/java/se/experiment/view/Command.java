@@ -11,9 +11,9 @@ public enum Command {
     GET,
 
     /**
-     * Rents an instrument
+     * Runs the experiment
      */
-    RENT,
+    RUN,
 
     /**
      * Lists all commands.

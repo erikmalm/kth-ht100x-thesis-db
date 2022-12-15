@@ -16,6 +16,10 @@ public class BlockingInterpreter {
     private Controller controller;
     private boolean keepReceivingCmds = false;
 
+    // DEFAULT MESSAGES
+
+    String errorMessageForRun;
+
     /**
      * Creates a new instance that will use the specified controller for all operations.
      *
@@ -23,6 +27,13 @@ public class BlockingInterpreter {
      */
     public BlockingInterpreter(Controller controller) {
         this.controller = controller;
+        setupMessages();
+    }
+
+    private void setupMessages() {
+        errorMessageForRun =
+                "Command should be on format RUN [DB] [READ]\n" +
+                "Example: RUN ADHOC READ";
     }
 
     /**
@@ -41,8 +52,6 @@ public class BlockingInterpreter {
 
         keepReceivingCmds = true;
 
-        String table = "";
-
         while (keepReceivingCmds) {
             try {
                 CmdLine cmdLine = new CmdLine(readNextLine());
@@ -53,13 +62,13 @@ public class BlockingInterpreter {
                             if (command == Command.ILLEGAL_COMMAND) {
                                 continue;
                             }
-                            System.out.println(command.toString().toLowerCase());
+                            System.out.println(command.toString().toUpperCase());
                         }
                         break;
 
                     case GET:
 
-                        table = cmdLine.getParameter(0);
+                        String table = cmdLine.getParameter(0);
 
                         if (Objects.equals(table, "")) {
                             System.out.println(table);
@@ -94,9 +103,20 @@ public class BlockingInterpreter {
 
                         break;
 
-                    case RENT:
+                    case RUN:
 
-//
+                        // VARIABLES FOR TEST RUN
+                        String db = cmdLine.getParameter(0);
+                        String type =  cmdLine.getParameter(1);
+
+                        if (ifNullOrEmpty(db, type)) {
+                            out(errorMessageForRun);
+                            break;
+                        }
+
+
+
+                        System.out.println("Run test on: " + db + " \tType of test: " + type);//
 
                         break;
 
@@ -127,6 +147,14 @@ public class BlockingInterpreter {
         }
     }
 
+    private boolean ifNullOrEmpty(String db, String type) {
+        return db == null || type == null || Objects.equals(db,"") || Objects.equals(type,"");
+    }
+
+    private void out(String errorMessage) {
+        System.out.print("Error: ");
+        System.out.println(errorMessage);
+    }
 
 
     private String readNextLine() {
