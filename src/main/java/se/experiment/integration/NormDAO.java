@@ -1,6 +1,5 @@
 package se.experiment.integration;
 
-import se.experiment.exceptions.AdhocDBException;
 import se.experiment.exceptions.NormDBException;
 import se.experiment.model.AdhocIndividual;
 import se.experiment.model.Test;

@@ -28,13 +28,11 @@ public class Controller {
     }
 
     public void runAdhocReadTestOne(Test test) throws AdhocDBException {
-        for (int i = 0; i < test.getAmountOfTests(); i ++)
-            adhocDb.runAdhocReadTestOne(test);
+        adhocDb.runAdhocReadTestOne(test);
     }
 
     public void runAdhocWriteTestOne(Test test) throws AdhocDBException {
-        for (int i = 0; i < test.getAmountOfTests(); i ++)
-            adhocDb.runAdhocWriteTestOne(test);
+        adhocDb.runAdhocWriteTestOne(test);
     }
 
     public void runAdhocUpdateTestOne(Test test) throws AdhocDBException {
