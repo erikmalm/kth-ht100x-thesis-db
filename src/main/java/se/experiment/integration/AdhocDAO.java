@@ -80,12 +80,12 @@ public class AdhocDAO {
         try {
             connectToAdhocDB();
             prepareStatements();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             throw new AdhocDBException("Could not connect to database", e);
         }
     }
 
-    private void connectToAdhocDB() throws ClassNotFoundException, SQLException {
+    private void connectToAdhocDB() throws SQLException {
         connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/adhoc",
                 "postgres", "admin");
         connection.setAutoCommit(false);
@@ -160,12 +160,12 @@ public class AdhocDAO {
             result = adHocReadTestOne.executeQuery();
             individuals = new ArrayList<AdhocIndividual>();
 
-            /*while (result.next()) {
+            while (result.next()) {
                 individuals.add(new AdhocIndividual(
                         result.getString(ID_COL_NAME),
                         result.getString(PERSONAL_NUMBER_COL_NAME))
                 );
-            }*/
+            }
 
             long end = System.nanoTime();
             test.addExecutionTime(end - start);

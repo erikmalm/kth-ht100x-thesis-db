@@ -2,6 +2,7 @@ package se.experiment;
 
 import se.experiment.controller.Controller;
 import se.experiment.exceptions.AdhocDBException;
+import se.experiment.exceptions.NormDBException;
 import se.experiment.view.BlockingInterpreter;
 
 public class Main {
@@ -9,9 +10,9 @@ public class Main {
 
         try {
             new BlockingInterpreter(new Controller()).handleCmds();
-        } catch (AdhocDBException bdbe) {
-            System.out.println("Could not connect to Soundgood database.");
-            bdbe.printStackTrace();
+        } catch (AdhocDBException | NormDBException e) {
+            System.out.println("Could not connect to database." + e.getMessage());
+            e.printStackTrace();
         }
 
         /*

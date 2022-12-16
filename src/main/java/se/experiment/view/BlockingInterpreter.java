@@ -3,6 +3,7 @@ package se.experiment.view;
 
 import se.experiment.controller.Controller;
 import se.experiment.exceptions.AdhocDBException;
+import se.experiment.exceptions.NormDBException;
 import se.experiment.model.Test;
 import se.experiment.model.IndividualDTO;
 
@@ -14,7 +15,7 @@ import java.util.Scanner;
 public class BlockingInterpreter {
     private static final String PROMPT = "> ";
     private final Scanner console = new Scanner(System.in);
-    private Controller controller;
+    private final Controller controller;
     private boolean keepReceivingCmds = false;
 
     private boolean shouldPrintResults = true;
@@ -116,8 +117,6 @@ public class BlockingInterpreter {
                         if (shouldPrintResults) out("PRINT: ON");
                         else out("PRINT: OFF");
 
-//
-
                         break;
 
                     case TEST:
@@ -128,41 +127,29 @@ public class BlockingInterpreter {
                         String prm = cmdLine.getParameter(2);
                         String amt = cmdLine.getParameter(3);
 
+                        // Check for critical input
                         if (ifNullOrEmpty(dbs, typ)) {
                             out(errorMessageForRun);
                             break;
                         }
 
-                        int tstNumber = 1;
-                        int tstAmount = 1;
+                        // Process optional input
+                        int tstNumber = getInputNumber(prm);
+                        int tstAmount = getInputNumber(amt);
 
-                        if (prm != null) {
-                            tstNumber = Integer.parseInt(prm);
-                        }
-
-                        if (amt != null) {
-                            tstAmount = Integer.parseInt(amt);
-                        }
-
+                        // Setup and execute test
                         Test current = new Test(typ, dbs, tstNumber, tstAmount);
-
                         parseTestCommand(current);
-
                         endTest(current);
-
 
                         break;
 
                     case FIND:
-
-//
-
+                        out("Not implemented.");
                         break;
 
                     case END:
-
-//
-
+                        out("Not implemented.");
                         break;
 
                     case QUIT:
@@ -180,86 +167,92 @@ public class BlockingInterpreter {
         }
     }
 
+    private static int getInputNumber(String var) {
+        // If no input, default to 1
+        int ipt = 1;
+
+        // If input, set that numbeer
+        if (var != null) {
+            ipt = Integer.parseInt(var);
+        }
+
+        // Return value
+        return ipt;
+    }
 
 
     private void parseTestCommand(Test test) {
 
         System.out.println("Setup test on " + test.getDb() + " on operation " + test.getType() + ", " + test.getAmountOfTests() + " number of times");
 
-        switch(test.getDb()) {
-            case "ADHOC":
-                runAdhocTests(test);
-                break;
-            default:
-                out(errorMessageForParseTestCommand);
-                break;
+        switch (test.getDb()) {
+            case "ADHOC" -> runAdhocTests(test);
+            case "NORM" -> runNormTests(test);
+            default -> out(errorMessageForParseTestCommand);
+        }
+    }
+
+    private void runNormTests(Test test) {
+        switch (test.getType()) {
+            case "READ" -> runNormReadTest(test);
+            case "WRITE" -> System.out.println("Test not implemented.");
+            case "UPDATE" -> System.out.println("Test not implemented.");
+            default -> {
+            }
+        }
+    }
+
+    private void runNormReadTest(Test test) {
+        if (test.getTestNumber() == 1) {
+            try {
+                for (int i = 0; i < test.getAmountOfTests(); i++)
+                    controller.runNormReadTestOne(test);
+            } catch (NormDBException e) {
+                System.out.println("Test failed " + e.getMessage());
+            }
         }
     }
 
     private void runAdhocTests(Test test) {
-        switch(test.getType()) {
-            case "READ":
-                runAdhocReadTest(test);
-                break;
-
-            case "WRITE":
-                runAdhocWriteTest(test);
-                break;
-
-            case "UPDATE":
-                runAdhocUpdateTest(test);
-                break;
-
-            default:
-                break;
+        switch (test.getType()) {
+            case "READ" -> runAdhocReadTest(test);
+            case "WRITE" -> runAdhocWriteTest(test);
+            case "UPDATE" -> runAdhocUpdateTest(test);
+            default -> {
+            }
         }
     }
 
     private void runAdhocUpdateTest(Test test) {
-        switch (test.getTestNumber()) {
-            case 1:
-                try {
-                    for (int i = 0; i < test.getAmountOfTests(); i ++)
-                        controller.runAdhocUpdateTestOne(test);
-                } catch (AdhocDBException e) {
-                    System.out.println("Test failed " + e.getMessage());
-                }
-                break;
-
-            default:
-                break;
+        if (test.getTestNumber() == 1) {
+            try {
+                for (int i = 0; i < test.getAmountOfTests(); i++)
+                    controller.runAdhocUpdateTestOne(test);
+            } catch (AdhocDBException e) {
+                System.out.println("Test failed " + e.getMessage());
+            }
         }
     }
 
     private void runAdhocWriteTest(Test test) {
-        switch (test.getTestNumber()) {
-            case 1:
-                try {
-                    for (int i = 0; i < test.getAmountOfTests(); i ++)
-                        controller.runAdhocWriteTestOne(test);
-                } catch (AdhocDBException e) {
-                    System.out.println("Test failed " + e.getMessage());
-                }
-                break;
-
-            default:
-                break;
+        if (test.getTestNumber() == 1) {
+            try {
+                for (int i = 0; i < test.getAmountOfTests(); i++)
+                    controller.runAdhocWriteTestOne(test);
+            } catch (AdhocDBException e) {
+                System.out.println("Test failed " + e.getMessage());
+            }
         }
     }
 
     private void runAdhocReadTest(Test test)  {
-        switch(test.getTestNumber()) {
-            case 1:
-                try {
-                    for (int i = 0; i < test.getAmountOfTests(); i ++)
-                        controller.runAdhocReadTestOne(test);
-                } catch (AdhocDBException e) {
-                    System.out.println("Test failed " + e.getMessage());
-                }
-                break;
-
-            default:
-                break;
+        if (test.getTestNumber() == 1) {
+            try {
+                for (int i = 0; i < test.getAmountOfTests(); i++)
+                    controller.runAdhocReadTestOne(test);
+            } catch (AdhocDBException e) {
+                System.out.println("Test failed " + e.getMessage());
+            }
         }
     }
 
