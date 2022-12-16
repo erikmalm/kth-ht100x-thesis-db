@@ -140,6 +140,7 @@ public class BlockingInterpreter {
                         // Setup and execute test
                         Test current = new Test(typ, dbs, tstNumber, tstAmount);
                         parseTestCommand(current);
+                        System.out.println("Test complete.");
                         endTest(current);
 
                         break;
@@ -183,7 +184,8 @@ public class BlockingInterpreter {
 
     private void parseTestCommand(Test test) {
 
-        System.out.println("Setup test on " + test.getDb() + " on operation " + test.getType() + ", " + test.getAmountOfTests() + " number of times");
+        if (hasValidInput(test))
+            printTestDetails(test);
 
         switch (test.getDb()) {
             case "ADHOC" -> runAdhocTests(test);
@@ -192,12 +194,44 @@ public class BlockingInterpreter {
         }
     }
 
+    private boolean hasValidInput(Test test) {
+        return (Objects.equals(test.getDb(), "ADHOC") || Objects.equals(test.getDb(), "NORM")) &&
+                Objects.equals(test.getType(), "READ") || Objects.equals(test.getType(), "WRITE") || Objects.equals(test.getType(), "UPDATE");
+    }
+
+    private void printTestDetails(Test test) {
+        System.out.println("Setup " + test.getType() + " (#" + test.getTestNumber() + ") test on " + test.getDb() + ", " + test.getAmountOfTests() + " number of times");
+        System.out.println("Running test, please wait...");
+    }
+
     private void runNormTests(Test test) {
         switch (test.getType()) {
             case "READ" -> runNormReadTest(test);
-            case "WRITE" -> System.out.println("Test not implemented.");
-            case "UPDATE" -> System.out.println("Test not implemented.");
+            case "WRITE" -> runNormWriteTest(test);
+            case "UPDATE" -> runNormUpdateTest(test);
             default -> {
+            }
+        }
+    }
+
+    private void runNormUpdateTest(Test test) {
+        if (test.getTestNumber() == 1) {
+            try {
+                for (int i = 0; i < test.getAmountOfTests(); i++)
+                    controller.runNormUpdateTestOne(test);
+            } catch (NormDBException e) {
+                System.out.println("Test failed " + e.getMessage());
+            }
+        }
+    }
+
+    private void runNormWriteTest(Test test) {
+        if (test.getTestNumber() == 1) {
+            try {
+                for (int i = 0; i < test.getAmountOfTests(); i++)
+                    controller.runNormWriteTestOne(test);
+            } catch (NormDBException e) {
+                System.out.println("Test failed " + e.getMessage());
             }
         }
     }

@@ -44,4 +44,12 @@ public class Controller {
     public void runNormReadTestOne(Test test) throws NormDBException {
         normDb.runNormReadTestOne(test);
     }
+
+    public void runNormWriteTestOne(Test test) throws NormDBException {
+        normDb.runNormWriteTestOne(test);
+    }
+
+    public void runNormUpdateTestOne(Test test) throws NormDBException {
+        normDb.runNormUpdateTestOne(test);
+    }
 }
