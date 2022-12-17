@@ -262,6 +262,14 @@ public class BlockingInterpreter {
                     System.out.println("Test failed " + e.getMessage());
                 }
             }
+            case 4 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormReadTestFour(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -319,6 +327,14 @@ public class BlockingInterpreter {
                 try {
                     for (int i = 0; i < test.getAmountOfTests(); i++)
                         controller.runAdhocReadTestThree(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 4 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocReadTestFour(test);
                 } catch (AdhocDBException e) {
                     System.out.println("Test failed " + e.getMessage());
                 }

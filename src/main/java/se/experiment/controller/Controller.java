@@ -37,6 +37,9 @@ public class Controller {
     public void runAdhocReadTestThree(Test test) throws AdhocDBException {
         adhocDb.runAdhocReadTestThree(test);
     }
+    public void runAdhocReadTestFour(Test test) throws AdhocDBException {
+        adhocDb.runAdhocReadTestFour(test);
+    }
 
     public void runAdhocWriteTestOne(Test test) throws AdhocDBException {
         adhocDb.runAdhocWriteTestOne(test);
@@ -56,6 +59,10 @@ public class Controller {
 
     public void runNormReadTestThree(Test test) throws NormDBException {
         normDb.runNormReadTestThree(test);
+    }
+
+    public void runNormReadTestFour(Test test) throws NormDBException {
+        normDb.runNormReadTestFour(test);
     }
 
     public void runNormWriteTestOne(Test test) throws NormDBException {

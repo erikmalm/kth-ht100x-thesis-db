@@ -17,14 +17,15 @@ public class NormDAO {
     private Connection connection;
     private static final String UNIQUE_PERSONAL_NUMBER = "20000101-1234";
 
+    // TABLE NAMES
+
     private final String INVESTMENT_TABLE_NAME = "public.investment";
     private final String INSURANCE_PACKAGE_TABLE_NAME = "public.insurance_package";
     private final String PERSON_TABLE_NAME = "public.person";
     private final String OTHER_INVESTMENTS_TABLE_NAME = "public.other_investments";
 
-    private final String INVESTED_CAPITAL_TABLE_NAME = "public.invested_capital";
 
-
+    // COLUMN NAMES
     private final String INVESTED_CAPITAL_COL_NAME = "invested_capital";
     private final String PERSON_ID_COL_NAME = "person_id";
     private final String TRAD_CAPITAL_COL_NAME = "trad_capital";
@@ -33,12 +34,15 @@ public class NormDAO {
     private final String LAST_NAME_COL_NAME = "last_name";
     private final String ID_COL_NAME = "id";
 
-
     private final String INSURANCE_PACKAGE_ID = "insurance_package_id";
+
+
+    // PREPARED STATEMENTS
 
     private PreparedStatement normReadTestOne;
     private PreparedStatement normReadTestTwo;
     private PreparedStatement normReadTestThree;
+    private PreparedStatement normReadTestFour;
     private PreparedStatement normWriteTestOne;
     private PreparedStatement resetNormWriteTestOne;
 
@@ -84,6 +88,11 @@ public class NormDAO {
                 "SELECT COUNT (*) " +
                         "FROM " + OTHER_INVESTMENTS_TABLE_NAME + " " +
                         "WHERE " + TRAD_CAPITAL_COL_NAME + " > 45000"
+        );
+        normReadTestFour = connection.prepareStatement(
+                "SELECT COUNT (*) " +
+                        "FROM " + PERSON_TABLE_NAME + " " +
+                        "WHERE SUBSTRING(" + PERSON_NUMBER_COL_NAME + ", 5, 2) = '03'"
         );
         normWriteTestOne = connection.prepareStatement(
                 "INSERT INTO " + PERSON_TABLE_NAME + " (" + PERSON_NUMBER_COL_NAME + ", " + FIRST_NAME_COL_NAME + ", " + LAST_NAME_COL_NAME + ") " +
@@ -178,6 +187,31 @@ public class NormDAO {
             result = normReadTestThree.executeQuery();
             long end = System.nanoTime();
             test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        } finally {
+            closeResultSet(getFailureMessage(test), result);
+        }
+    }
+
+    public void runNormReadTestFour(Test test) throws NormDBException {
+
+        ResultSet result = null;
+
+        try {
+            long start = System.nanoTime();
+            result = normReadTestFour.executeQuery();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+            /* For verification purposes
+            while (result.next()) {
+                System.out.println(result.getInt("count"));
+            }
+
+             */
+
 
         } catch (SQLException e) {
             handleException(getFailureMessage(test), e);

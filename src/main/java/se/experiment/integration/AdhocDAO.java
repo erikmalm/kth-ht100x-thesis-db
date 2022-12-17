@@ -34,6 +34,7 @@ public class AdhocDAO {
     private PreparedStatement adHocReadTestOne;
     private PreparedStatement adHocReadTestTwo;
     private PreparedStatement adHocReadTestThree;
+    private PreparedStatement adHocReadTestFour;
     private PreparedStatement adHocWriteTestOne;
     private PreparedStatement resetAdhocWriteTestOne;
 
@@ -57,6 +58,23 @@ public class AdhocDAO {
                         "LIMIT 1"
         );
 
+        adHocReadTestTwo = connection.prepareStatement(
+                "SELECT COUNT(1) " +
+                        "FROM " + INDIVIDUALS_TABLE_NAME + " " +
+                        "WHERE " + FUND_CAPITAL_COL_NAME + " > 50000"
+        );
+        adHocReadTestThree = connection.prepareStatement(
+                "SELECT COUNT(*) " +
+                        "FROM " + INDIVIDUALS_TABLE_NAME + " " +
+                        "WHERE " + TRAD_CAPITAL_COL_NAME + " > 45000"
+        );
+
+        adHocReadTestFour = connection.prepareStatement(
+                "SELECT COUNT(*) " +
+                        "FROM " + INDIVIDUALS_TABLE_NAME + " " +
+                        "WHERE SUBSTRING(" + PERSONAL_NUMBER_COL_NAME + ", 5, 2) = '03'"
+        );
+
         adHocWriteTestOne = connection.prepareStatement(
                 "INSERT INTO " + INDIVIDUALS_TABLE_NAME + " " +
                         "(" + PERSONAL_NUMBER_COL_NAME + ") " +
@@ -78,16 +96,7 @@ public class AdhocDAO {
         prepareAdhocUpdateTestOne = adHocWriteTestOne;
         resetAdhocUpdateTestOne = resetAdhocWriteTestOne;
 
-        adHocReadTestTwo = connection.prepareStatement(
-                "SELECT COUNT(1) " +
-                        "FROM " + INDIVIDUALS_TABLE_NAME + " " +
-                        "WHERE " + FUND_CAPITAL_COL_NAME + " > 50000"
-        );
-        adHocReadTestThree = connection.prepareStatement(
-                "SELECT COUNT(*) " +
-                        "FROM " + INDIVIDUALS_TABLE_NAME + " " +
-                        "WHERE " + TRAD_CAPITAL_COL_NAME + " > 45000"
-        );
+
 
     }
 
@@ -199,13 +208,6 @@ public class AdhocDAO {
         try {
             long start = System.nanoTime();
             result = adHocReadTestTwo.executeQuery();
-
-            /* For verification purposes
-            while (result.next()) {
-                System.out.println(result.getInt("count"));
-            }
-             */
-
             long end = System.nanoTime();
             test.addExecutionTime(end - start);
 
@@ -224,8 +226,25 @@ public class AdhocDAO {
         try {
             long start = System.nanoTime();
             result = adHocReadTestThree.executeQuery();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
 
-            /* For verification purposes only
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        } finally {
+            closeResultSet(getFailureMessage(test), result);
+        }
+    }
+
+    public void runAdhocReadTestFour(Test test) throws AdhocDBException {
+
+        ResultSet result = null;
+
+        try {
+            long start = System.nanoTime();
+            result = adHocReadTestFour.executeQuery();
+
+            /* For verification only
             while (result.next()) {
                 System.out.println(result.getInt("count"));
             }
