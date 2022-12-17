@@ -31,6 +31,13 @@ public class Controller {
         adhocDb.runAdhocReadTestOne(test);
     }
 
+    public void runAdhocReadTestTwo(Test test) throws AdhocDBException {
+        adhocDb.runAdhocReadTestTwo(test);
+    }
+    public void runAdhocReadTestThree(Test test) throws AdhocDBException {
+        adhocDb.runAdhocReadTestThree(test);
+    }
+
     public void runAdhocWriteTestOne(Test test) throws AdhocDBException {
         adhocDb.runAdhocWriteTestOne(test);
     }
@@ -41,6 +48,14 @@ public class Controller {
 
     public void runNormReadTestOne(Test test) throws NormDBException {
         normDb.runNormReadTestOne(test);
+    }
+
+    public void runNormReadTestTwo(Test test) throws NormDBException {
+        normDb.runNormReadTestTwo(test);
+    }
+
+    public void runNormReadTestThree(Test test) throws NormDBException {
+        normDb.runNormReadTestThree(test);
     }
 
     public void runNormWriteTestOne(Test test) throws NormDBException {

@@ -237,12 +237,30 @@ public class BlockingInterpreter {
     }
 
     private void runNormReadTest(Test test) {
-        if (test.getTestNumber() == 1) {
-            try {
-                for (int i = 0; i < test.getAmountOfTests(); i++)
-                    controller.runNormReadTestOne(test);
-            } catch (NormDBException e) {
-                System.out.println("Test failed " + e.getMessage());
+        switch (test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormReadTestOne(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormReadTestTwo(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 3 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormReadTestThree(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
             }
         }
     }
@@ -280,12 +298,30 @@ public class BlockingInterpreter {
     }
 
     private void runAdhocReadTest(Test test)  {
-        if (test.getTestNumber() == 1) {
-            try {
-                for (int i = 0; i < test.getAmountOfTests(); i++)
-                    controller.runAdhocReadTestOne(test);
-            } catch (AdhocDBException e) {
-                System.out.println("Test failed " + e.getMessage());
+        switch (test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocReadTestOne(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocReadTestTwo(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 3 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocReadTestThree(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package se.experiment.integration;
 
+import se.experiment.exceptions.AdhocDBException;
 import se.experiment.exceptions.NormDBException;
 import se.experiment.model.AdhocIndividual;
 import se.experiment.model.Test;
@@ -19,11 +20,14 @@ public class NormDAO {
     private final String INVESTMENT_TABLE_NAME = "public.investment";
     private final String INSURANCE_PACKAGE_TABLE_NAME = "public.insurance_package";
     private final String PERSON_TABLE_NAME = "public.person";
+    private final String OTHER_INVESTMENTS_TABLE_NAME = "public.other_investments";
+
     private final String INVESTED_CAPITAL_TABLE_NAME = "public.invested_capital";
 
 
     private final String INVESTED_CAPITAL_COL_NAME = "invested_capital";
     private final String PERSON_ID_COL_NAME = "person_id";
+    private final String TRAD_CAPITAL_COL_NAME = "trad_capital";
     private final String PERSON_NUMBER_COL_NAME = "person_number";
     private final String FIRST_NAME_COL_NAME = "first_name";
     private final String LAST_NAME_COL_NAME = "last_name";
@@ -33,6 +37,8 @@ public class NormDAO {
     private final String INSURANCE_PACKAGE_ID = "insurance_package_id";
 
     private PreparedStatement normReadTestOne;
+    private PreparedStatement normReadTestTwo;
+    private PreparedStatement normReadTestThree;
     private PreparedStatement normWriteTestOne;
     private PreparedStatement resetNormWriteTestOne;
 
@@ -63,6 +69,21 @@ public class NormDAO {
                         "INNER JOIN " + PERSON_TABLE_NAME + " AS P ON (T." + PERSON_ID_COL_NAME + " = P." + ID_COL_NAME + ") " +
                         "ORDER BY T.totalCapital " +
                         "LIMIT 1"
+        );
+        normReadTestTwo = connection.prepareStatement(
+                "SELECT COUNT (1) " +
+                        "FROM (SELECT SUM(" + INVESTED_CAPITAL_COL_NAME + ")" + " AS totalCapital, " +
+                        "IP." + PERSON_ID_COL_NAME + " " +
+                        "FROM " + INVESTMENT_TABLE_NAME + " AS I INNER JOIN " +
+                        INSURANCE_PACKAGE_TABLE_NAME + " AS IP ON (I." + INSURANCE_PACKAGE_ID + " = IP.id) " +
+                        "GROUP BY IP." + PERSON_ID_COL_NAME + " " +
+                        "HAVING SUM(" + INVESTED_CAPITAL_COL_NAME + ") > 50000) AS T " +
+                        "INNER JOIN " + PERSON_TABLE_NAME + " AS P ON (T." + PERSON_ID_COL_NAME + " = P." + ID_COL_NAME + ") "
+        );
+        normReadTestThree = connection.prepareStatement(
+                "SELECT COUNT (*) " +
+                        "FROM " + OTHER_INVESTMENTS_TABLE_NAME + " " +
+                        "WHERE " + TRAD_CAPITAL_COL_NAME + " > 45000"
         );
         normWriteTestOne = connection.prepareStatement(
                 "INSERT INTO " + PERSON_TABLE_NAME + " (" + PERSON_NUMBER_COL_NAME + ", " + FIRST_NAME_COL_NAME + ", " + LAST_NAME_COL_NAME + ") " +
@@ -101,7 +122,6 @@ public class NormDAO {
 
     public void runNormReadTestOne(Test test) throws NormDBException {
 
-        String failureMessage = "Failed to run READ test number one on Normalized Database";
         List<AdhocIndividual> individuals = new ArrayList<>();
         ResultSet result = null;
 
@@ -125,15 +145,50 @@ public class NormDAO {
             test.addExecutionTime(end - start);
 
         } catch (SQLException e) {
-            handleException(failureMessage, e);
+            handleException(getFailureMessage(test), e);
         } finally {
-            closeResultSet(failureMessage, result);
+            closeResultSet(getFailureMessage(test), result);
         }
 
     }
 
+    public void runNormReadTestTwo(Test test) throws NormDBException {
+
+        ResultSet result = null;
+
+        try {
+            long start = System.nanoTime();
+            result = normReadTestTwo.executeQuery();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        } finally {
+            closeResultSet(getFailureMessage(test), result);
+        }
+    }
+
+    public void runNormReadTestThree(Test test) throws NormDBException {
+
+        ResultSet result = null;
+
+        try {
+            long start = System.nanoTime();
+            result = normReadTestThree.executeQuery();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        } finally {
+            closeResultSet(getFailureMessage(test), result);
+        }
+    }
+
+
     public void runNormWriteTestOne(Test test) throws NormDBException {
-        String failureMessage = "Failed to run WRITE test number one on Normalized Database";
+
         List<AdhocIndividual> individuals = new ArrayList<>();
         int updatedRows = 0;
 
@@ -145,7 +200,7 @@ public class NormDAO {
             test.addExecutionTime(end - start);
 
         } catch (SQLException e) {
-            handleException(failureMessage, e);
+            handleException(getFailureMessage(test), e);
         }
 
         // Restore conditions
@@ -154,12 +209,12 @@ public class NormDAO {
             connection.commit();
 
         } catch (SQLException e) {
-            handleException(failureMessage, e);
+            handleException(getFailureMessage(test), e);
         }
     }
 
     public void runNormUpdateTestOne(Test test) throws NormDBException {
-        String failureMessage = "Failed to run UPDATE test number one on Normalized Database";
+
         ResultSet result = null;
         double originalValue = 0;
         int updatedRows = 0;
@@ -173,9 +228,9 @@ public class NormDAO {
             }
 
         } catch (SQLException e) {
-            handleException(failureMessage, e);
+            handleException(getFailureMessage(test), e);
         } finally {
-            closeResultSet(failureMessage, result);
+            closeResultSet(getFailureMessage(test), result);
         }
 
         try {
@@ -193,7 +248,7 @@ public class NormDAO {
 
 
         } catch (SQLException e) {
-            handleException(failureMessage, e);
+            handleException(getFailureMessage(test), e);
         }
 
 
@@ -222,6 +277,11 @@ public class NormDAO {
             throw new NormDBException(failureMsg);
         }
     }
+
+    private String getFailureMessage(Test test) {
+        return "Failed to run" + test.getType() + "(#" +test.getTestNumber() + ") on " + test.getDb() + " database.";
+    }
+
 
 
 }
