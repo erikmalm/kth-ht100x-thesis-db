@@ -236,12 +236,22 @@ public class BlockingInterpreter {
     }
 
     private void runNormWriteTest(Test test) {
-        if (test.getTestNumber() == 1) {
-            try {
-                for (int i = 0; i < test.getAmountOfTests(); i++)
-                    controller.runNormWriteTestOne(test);
-            } catch (NormDBException e) {
-                System.out.println("Test failed " + e.getMessage());
+        switch (test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormWriteTestOne(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormWriteTestTwo(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
             }
         }
     }
@@ -315,12 +325,22 @@ public class BlockingInterpreter {
     }
 
     private void runAdhocWriteTest(Test test) {
-        if (test.getTestNumber() == 1) {
-            try {
-                for (int i = 0; i < test.getAmountOfTests(); i++)
-                    controller.runAdhocWriteTestOne(test);
-            } catch (AdhocDBException e) {
-                System.out.println("Test failed " + e.getMessage());
+        switch (test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocWriteTestOne(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocWriteTestTwo(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
             }
         }
     }

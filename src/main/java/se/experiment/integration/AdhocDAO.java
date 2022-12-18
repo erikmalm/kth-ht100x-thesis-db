@@ -45,10 +45,6 @@ public class AdhocDAO {
     private PreparedStatement adHocReadTestThree;
     private PreparedStatement adHocReadTestFour;
 
-    // WRITE TESTS
-    private PreparedStatement adHocWriteTestOne;
-    private PreparedStatement resetAdhocWriteTestOne;
-
     // UPDATE TEST
     private PreparedStatement prepareAdhocUpdateTestOne;
     private PreparedStatement adhocUpdateTestOne;
@@ -57,6 +53,11 @@ public class AdhocDAO {
     private PreparedStatement adhocUpdateTestTwo;
     private PreparedStatement resetAdhocUpdateTestTwo;
 
+    // WRITE TESTS
+    private PreparedStatement adHocWriteTestOne;
+    private PreparedStatement resetAdhocWriteTestOne;
+    private PreparedStatement adHocWriteTestTwo;
+    private PreparedStatement resetAdhocWriteTestTwo;
 
     private void prepareStatements() throws SQLException {
 
@@ -122,6 +123,17 @@ public class AdhocDAO {
         );
 
         resetAdhocUpdateTestTwo = connection.prepareStatement(
+                "DELETE FROM " + COMPANIES_TABLE_NAME + " " +
+                        "WHERE " + ORG_NUMBER_COL_NAME + " = '" + UNIQUE_COMPANY_NUMBER + "'"
+        );
+
+        adHocWriteTestTwo = connection.prepareStatement(
+                "INSERT INTO " + COMPANIES_TABLE_NAME + " " +
+                        "(" + ORG_NUMBER_COL_NAME + ", " + COMPANY_NAME_COL_NAME + ") " +
+                        "VALUES " + "('"+ UNIQUE_COMPANY_NUMBER + "', '" + UNIQUE_COMPANY_NAME + "')"
+        );
+
+        resetAdhocWriteTestTwo = connection.prepareStatement(
                 "DELETE FROM " + COMPANIES_TABLE_NAME + " " +
                         "WHERE " + ORG_NUMBER_COL_NAME + " = '" + UNIQUE_COMPANY_NUMBER + "'"
         );
@@ -313,6 +325,33 @@ public class AdhocDAO {
         } catch (SQLException e) {
             handleException(getFailureMessage(test), e);
         }
+    }
+
+
+    public void runAdhocWriteTestTwo(Test test) throws AdhocDBException {
+
+        int updatedRows = 0;
+
+        try {
+            long start = System.nanoTime();
+            updatedRows = adHocWriteTestTwo.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+        // Restore conditions
+        try {
+            updatedRows = resetAdhocWriteTestTwo.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
     }
 
     public void runAdhocUpdateTestOne(Test test) throws AdhocDBException {
