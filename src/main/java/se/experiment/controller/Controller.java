@@ -22,7 +22,7 @@ public class Controller {
     public List<? extends IndividualDTO> getAllAdhocIndividuals() throws Exception {
         try {
             return adhocDb.getAllIndividuals();
-        } catch (Exception e ) {
+        } catch (Exception e) {
             throw new Exception("Couldn't get individuals", e);
         }
     }
@@ -34,9 +34,11 @@ public class Controller {
     public void runAdhocReadTestTwo(Test test) throws AdhocDBException {
         adhocDb.runAdhocReadTestTwo(test);
     }
+
     public void runAdhocReadTestThree(Test test) throws AdhocDBException {
         adhocDb.runAdhocReadTestThree(test);
     }
+
     public void runAdhocReadTestFour(Test test) throws AdhocDBException {
         adhocDb.runAdhocReadTestFour(test);
     }
@@ -47,6 +49,9 @@ public class Controller {
 
     public void runAdhocUpdateTestOne(Test test) throws AdhocDBException {
         adhocDb.runAdhocUpdateTestOne(test);
+    }
+    public void runAdhocUpdateTestTwo(Test test) throws AdhocDBException {
+        adhocDb.runAdhocUpdateTestTwo(test);
     }
 
     public void runNormReadTestOne(Test test) throws NormDBException {
@@ -72,4 +77,9 @@ public class Controller {
     public void runNormUpdateTestOne(Test test) throws NormDBException {
         normDb.runNormUpdateTestOne(test);
     }
+
+    public void runNormUpdateTestTwo(Test test) throws NormDBException {
+        normDb.runNormUpdateTestTwo(test);
+    }
+
 }

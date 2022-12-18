@@ -215,12 +215,22 @@ public class BlockingInterpreter {
     }
 
     private void runNormUpdateTest(Test test) {
-        if (test.getTestNumber() == 1) {
-            try {
-                for (int i = 0; i < test.getAmountOfTests(); i++)
-                    controller.runNormUpdateTestOne(test);
-            } catch (NormDBException e) {
-                System.out.println("Test failed " + e.getMessage());
+        switch(test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormUpdateTestOne(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormUpdateTestTwo(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
             }
         }
     }
@@ -284,12 +294,22 @@ public class BlockingInterpreter {
     }
 
     private void runAdhocUpdateTest(Test test) {
-        if (test.getTestNumber() == 1) {
-            try {
-                for (int i = 0; i < test.getAmountOfTests(); i++)
-                    controller.runAdhocUpdateTestOne(test);
-            } catch (AdhocDBException e) {
-                System.out.println("Test failed " + e.getMessage());
+        switch (test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocUpdateTestOne(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocUpdateTestTwo(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
             }
         }
     }

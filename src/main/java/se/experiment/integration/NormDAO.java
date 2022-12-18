@@ -15,7 +15,13 @@ public class NormDAO {
     private final String DB_PASSWORD = "admin";
     private final String DB_PATH = "test_normalized";
     private Connection connection;
+
+    // Unique values for testing
     private static final String UNIQUE_PERSONAL_NUMBER = "20000101-1234";
+    private static final String UNIQUE_FUND_ISIN_NUMBER = "SE0018539999";
+    private static final String UNIQUE_FUND_NAME = "Eriks fond";
+    private static final String SET_FOCUS = "Hållbarhetsfokuserad";
+
 
     // TABLE NAMES
 
@@ -23,7 +29,7 @@ public class NormDAO {
     private final String INSURANCE_PACKAGE_TABLE_NAME = "public.insurance_package";
     private final String PERSON_TABLE_NAME = "public.person";
     private final String OTHER_INVESTMENTS_TABLE_NAME = "public.other_investments";
-
+    private final String FUND_TABLE_NAME = "public.fund";
 
     // COLUMN NAMES
     private final String INVESTED_CAPITAL_COL_NAME = "invested_capital";
@@ -33,8 +39,11 @@ public class NormDAO {
     private final String FIRST_NAME_COL_NAME = "first_name";
     private final String LAST_NAME_COL_NAME = "last_name";
     private final String ID_COL_NAME = "id";
+    private final String ISIN_COL_NAME = "isin";
+    private final String NAME_COL_NAME = "name";
 
     private final String INSURANCE_PACKAGE_ID = "insurance_package_id";
+    private final String SUSTAINABILITY_FOCUS_COL_NAME = "sustainability_focus";
 
 
     // PREPARED STATEMENTS
@@ -49,6 +58,9 @@ public class NormDAO {
     private PreparedStatement prepareNormUpdateTestOne;
     private PreparedStatement normUpdateTestOne;
     private PreparedStatement resetNormUpdateTestOne;
+    private PreparedStatement prepareNormUpdateTestTwo;
+    private PreparedStatement normUpdateTestTwo;
+    private PreparedStatement resetNormUpdateTestTwo;
 
 
     public NormDAO() throws NormDBException {
@@ -119,6 +131,21 @@ public class NormDAO {
                 "UPDATE " + INVESTMENT_TABLE_NAME + " " +
                         "SET " + INVESTED_CAPITAL_COL_NAME + " = ? " + // invested capital
                         "WHERE id = 1"
+        );
+
+        prepareNormUpdateTestTwo = connection.prepareStatement(
+                "INSERT INTO " + FUND_TABLE_NAME + " (" + ISIN_COL_NAME + ", " + NAME_COL_NAME + ") " +
+                        "VALUES ('"+ UNIQUE_FUND_ISIN_NUMBER + "', '" + UNIQUE_FUND_NAME + "')"
+        );
+
+        normUpdateTestTwo = connection.prepareStatement(
+                "UPDATE " + FUND_TABLE_NAME + "  " +
+                        "SET " + SUSTAINABILITY_FOCUS_COL_NAME + " = '" + SET_FOCUS + "' " +
+                        "WHERE " + ISIN_COL_NAME + " = '" + UNIQUE_FUND_ISIN_NUMBER + "'"
+        );
+        resetNormUpdateTestTwo = connection.prepareStatement(
+                "DELETE FROM " + FUND_TABLE_NAME + " " +
+                        "WHERE " + ISIN_COL_NAME + " = '" + UNIQUE_FUND_ISIN_NUMBER + "'"
         );
 
     }
@@ -285,6 +312,40 @@ public class NormDAO {
             handleException(getFailureMessage(test), e);
         }
 
+
+    }
+
+    public void runNormUpdateTestTwo(Test test) throws NormDBException {
+
+
+        double originalValue = 0;
+        int updatedRows = 0;
+
+        // Prepare test and conditions
+        try {
+            updatedRows = prepareNormUpdateTestTwo.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+        try {
+            // Perform test
+            long start = System.nanoTime();
+            updatedRows = normUpdateTestTwo.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+            // Restore conditions
+            updatedRows = resetNormUpdateTestTwo.executeUpdate();
+            connection.commit();
+
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
 
     }
 

@@ -17,9 +17,12 @@ public class AdhocDAO {
     private Connection connection;
 
     private static final String UNIQUE_PERSONAL_NUMBER = "20000101-1234";
+    private static final String UNIQUE_COMPANY_NUMBER = "1800278027877";
+    private static final String UNIQUE_COMPANY_NAME = "Deduce It Consulting AB";
 
     // TABLES
     private static final String INDIVIDUALS_TABLE_NAME = "public.hallbarheter_privat_id";
+    private static final String COMPANIES_TABLE_NAME = "public.hallbarheter";
 
 
     // COLUMNS
@@ -27,21 +30,32 @@ public class AdhocDAO {
     private static final String PERSONAL_NUMBER_COL_NAME = "person_id";
     private static final String FUND_CAPITAL_COL_NAME = "fondkapital";
     private static final String TRAD_CAPITAL_COL_NAME = "tradkapital";
+    private static final String ORG_NUMBER_COL_NAME = "orgnummer";
+    private static final String COMPANY_NAME_COL_NAME = "företag";
+
+    private static final String CARBON_FOOTPRINT_FUND_COL_NAME = "carbon_footprint_fund";
 
 
     //STATEMENTS
     private PreparedStatement getAllAdhocIndividuals;
+
+    // READ TESTS
     private PreparedStatement adHocReadTestOne;
     private PreparedStatement adHocReadTestTwo;
     private PreparedStatement adHocReadTestThree;
     private PreparedStatement adHocReadTestFour;
+
+    // WRITE TESTS
     private PreparedStatement adHocWriteTestOne;
     private PreparedStatement resetAdhocWriteTestOne;
 
-
+    // UPDATE TEST
     private PreparedStatement prepareAdhocUpdateTestOne;
     private PreparedStatement adhocUpdateTestOne;
     private PreparedStatement resetAdhocUpdateTestOne;
+    private PreparedStatement prepareAdhocUpdateTestTwo;
+    private PreparedStatement adhocUpdateTestTwo;
+    private PreparedStatement resetAdhocUpdateTestTwo;
 
 
     private void prepareStatements() throws SQLException {
@@ -96,8 +110,21 @@ public class AdhocDAO {
         prepareAdhocUpdateTestOne = adHocWriteTestOne;
         resetAdhocUpdateTestOne = resetAdhocWriteTestOne;
 
+        prepareAdhocUpdateTestTwo = connection.prepareStatement(
+                "INSERT INTO " + COMPANIES_TABLE_NAME + " (" + ORG_NUMBER_COL_NAME +", " + COMPANY_NAME_COL_NAME + ") " +
+                        "VALUES ('" + UNIQUE_COMPANY_NUMBER + "', '" + UNIQUE_COMPANY_NAME + "')"
+        );
 
+        adhocUpdateTestTwo = connection.prepareStatement(
+                "UPDATE " + COMPANIES_TABLE_NAME + " " +
+                        "SET " + CARBON_FOOTPRINT_FUND_COL_NAME + " = 5.0 " +
+                        "WHERE " + ORG_NUMBER_COL_NAME + " = '" + UNIQUE_COMPANY_NUMBER + "'"
+        );
 
+        resetAdhocUpdateTestTwo = connection.prepareStatement(
+                "DELETE FROM " + COMPANIES_TABLE_NAME + " " +
+                        "WHERE " + ORG_NUMBER_COL_NAME + " = '" + UNIQUE_COMPANY_NUMBER + "'"
+        );
     }
 
     public AdhocDAO() throws AdhocDBException {
@@ -316,9 +343,39 @@ public class AdhocDAO {
         } catch (SQLException e) {
             handleException(getFailureMessage(test), e);
         }
+    }
+
+    public void runAdhocUpdateTestTwo(Test test) throws AdhocDBException {
+
+        int updatedRows = 0;
+
+        // Prepare test and conditions
+        try {
+            for (int i = 0; i < 20; i ++) {
+                updatedRows = prepareAdhocUpdateTestTwo.executeUpdate();
+                connection.commit();
+            }
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+        // Run test
 
 
+        try {
+            long start = System.nanoTime();
+            updatedRows = adhocUpdateTestTwo.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
 
+            // Restore conditions
+            updatedRows = resetAdhocUpdateTestTwo.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
     }
 
     private String getFailureMessage(Test test) {
