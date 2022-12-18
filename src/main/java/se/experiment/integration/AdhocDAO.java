@@ -12,7 +12,7 @@ public class AdhocDAO {
 
     // DB Setup
     private final String DB_USERNAME = "postgres";
-    private final String DB_PASSWORD = "adnin";
+    private final String DB_PASSWORD = "admin";
     private final String DB_PATH = "test_adhoc";
     private Connection connection;
 
@@ -151,7 +151,7 @@ public class AdhocDAO {
 
     private void connectToAdhocDB() throws SQLException {
         connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + DB_PATH,
-                "postgres", "admin");
+                DB_USERNAME, DB_PASSWORD);
         connection.setAutoCommit(false);
     }
 
