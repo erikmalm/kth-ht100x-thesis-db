@@ -10,4 +10,6 @@ These instructions will get you a copy of the project up and running on your loc
 - PostgreSQL
 
 ### Installing
-```git clone https://github.com/[USERNAME]/adhoc-norm-db-test.git```
+```
+git clone https://github.com/[USERNAME]/adhoc-norm-db-test.git
+```
