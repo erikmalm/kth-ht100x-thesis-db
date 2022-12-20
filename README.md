@@ -38,8 +38,8 @@ The tool operates through a command-line interface. The following commands are a
 - **`QUIT`**: Exits the tool.
 
 ## Built with
-- Java - The programming language used
-- PostgreSQL - The database management system
+- [Java](https://www.java.com/sv/) - The programming language used
+- [PostgreSQL](https://www.postgresql.org/) - The database management system
 
 ## Authors
 - Erik Sävström Malm, with inspiration from Leif Lindbäcks Command Line Interpreter
