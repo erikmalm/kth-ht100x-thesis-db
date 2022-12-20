@@ -12,12 +12,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
+/**
+ * This class provides a command line interface for interacting with the controller
+ * and performing operations on the model.
+ */
+
 public class BlockingInterpreter {
     private static final String PROMPT = "> ";
     private final Scanner console = new Scanner(System.in);
     private final Controller controller;
     private boolean keepReceivingCmds = false;
-
     private boolean shouldPrintResults = true;
 
 
@@ -36,6 +40,10 @@ public class BlockingInterpreter {
         setupMessages();
     }
 
+    /**
+     * Initializes the error messages for the RUN and TEST commands.
+     */
+
     private void setupMessages() {
         errorMessageForRun =
                 "Error: Command should be on format:\n" +
@@ -52,7 +60,7 @@ public class BlockingInterpreter {
     }
 
     /**
-     * Stops the commend interpreter.
+     * Stops the command interpreter.
      */
     public void stop() {
         keepReceivingCmds = false;
@@ -81,7 +89,8 @@ public class BlockingInterpreter {
                         }
                         break;
 
-                    case GET:
+
+                    case GET: // Only partially implemented. Not necessary for testing.
 
                         String table = cmdLine.getParameter(0);
 
@@ -109,7 +118,6 @@ public class BlockingInterpreter {
                         // Reset values
 
                         break;
-
 
 
                     case PRINT:
@@ -143,14 +151,6 @@ public class BlockingInterpreter {
                         System.out.println("Test complete.");
                         endTest(current);
 
-                        break;
-
-                    case FIND:
-                        out("Not implemented.");
-                        break;
-
-                    case END:
-                        out("Not implemented.");
                         break;
 
                     case QUIT:

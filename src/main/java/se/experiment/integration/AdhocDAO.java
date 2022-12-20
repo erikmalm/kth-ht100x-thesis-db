@@ -8,6 +8,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * This class is a Data Access Object (DAO) for the Adhoc database. It provides methods for
+ * interacting with the database, such as running tests and retrieving data.
+ */
 public class AdhocDAO {
 
     // DB Setup
@@ -16,6 +21,7 @@ public class AdhocDAO {
     private final String DB_PATH = "test_adhoc";
     private Connection connection;
 
+    // UNIQUE VARIABLES
     private static final String UNIQUE_PERSONAL_NUMBER = "20000101-1234";
     private static final String UNIQUE_COMPANY_NUMBER = "1800278027877";
     private static final String UNIQUE_COMPANY_NAME = "Deduce It Consulting AB";
@@ -24,7 +30,6 @@ public class AdhocDAO {
     private static final String INDIVIDUALS_TABLE_NAME = "public.hallbarheter_privat_id";
     private static final String COMPANIES_TABLE_NAME = "public.hallbarheter";
 
-
     // COLUMNS
     private static final String ID_COL_NAME = "id";
     private static final String PERSONAL_NUMBER_COL_NAME = "person_id";
@@ -32,9 +37,7 @@ public class AdhocDAO {
     private static final String TRAD_CAPITAL_COL_NAME = "tradkapital";
     private static final String ORG_NUMBER_COL_NAME = "orgnummer";
     private static final String COMPANY_NAME_COL_NAME = "företag";
-
     private static final String CARBON_FOOTPRINT_FUND_COL_NAME = "carbon_footprint_fund";
-
 
     //STATEMENTS
     private PreparedStatement getAllAdhocIndividuals;
@@ -45,7 +48,7 @@ public class AdhocDAO {
     private PreparedStatement adHocReadTestThree;
     private PreparedStatement adHocReadTestFour;
 
-    // UPDATE TEST
+    // UPDATE TESTS
     private PreparedStatement prepareAdhocUpdateTestOne;
     private PreparedStatement adhocUpdateTestOne;
     private PreparedStatement resetAdhocUpdateTestOne;

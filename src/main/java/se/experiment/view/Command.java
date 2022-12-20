@@ -6,7 +6,7 @@ package se.experiment.view;
 public enum Command {
 
     /**
-     * Lists all existing instruments.
+     * Runs a query to fetch all individuals from the ad hoc database.
      */
     GET,
 
@@ -22,25 +22,12 @@ public enum Command {
     HELP,
 
     /**
-     * List all available instruments
+     * Enables/Disables printing
      */
     PRINT,
 
     /**
-     * Find a specific rental instrument
-     * and print information about it
-     */
-
-    FIND,
-
-    /**
-     * Terminate a specific rental
-     */
-
-    END,
-
-    /**
-     * Leave the chat application.
+     * Leave the test application.
      */
     QUIT,
 
