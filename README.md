@@ -23,7 +23,7 @@ git clone https://github.com/[USERNAME]/adhoc-norm-db-test.git
 
 The tool operates through a command-line interface. The following commands are available:
 
-- *'HELP'*: Lists all available commands.
+- **`HELP`**: Lists all available commands.
 - GET: Retrieves data from the adhoc database.
 - PRINT: Toggles the display of test results.
 - TEST: Runs a test on either the adhoc or norm database.
