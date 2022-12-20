@@ -4,3 +4,7 @@ This project is a command-line tool for testing the performance of adhoc and nor
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
+### Prerequisites
+- Java 11 or higher
+- PostgreSQL
