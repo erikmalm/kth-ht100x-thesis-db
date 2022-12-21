@@ -151,7 +151,7 @@ public class AdhocDAO {
 
         prepareAdhocDeleteTestOne = adHocWriteTestOne;
         adhocDeleteTestOne = resetAdhocWriteTestOne;
-        prepareAdhocUpdateTestTwo = adHocWriteTestTwo;
+        prepareAdhocDeleteTestTwo = adHocWriteTestTwo;
         adhocDeleteTestTwo = resetAdhocWriteTestTwo;
     }
 
