@@ -136,4 +136,12 @@ public class Controller {
     public void runNormDeleteTestTwo(Test test) throws NormDBException {
         normDb.runNormDeleteTestTwo(test);
     }
+
+    public void runAdhocDeleteTestOne(Test test) throws AdhocDBException {
+        adhocDb.runAdhocDeleteTestOne(test);
+    }
+
+    public void runAdhocDeleteTestTwo(Test test) throws AdhocDBException {
+        adhocDb.runAdhocDeleteTestTwo(test);
+    }
 }

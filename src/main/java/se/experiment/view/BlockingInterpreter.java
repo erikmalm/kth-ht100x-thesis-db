@@ -327,6 +327,24 @@ public class BlockingInterpreter {
     }
 
     private void runAdhocDeleteTest(Test test) {
+        switch (test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocDeleteTestOne(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runAdhocDeleteTestTwo(test);
+                } catch (AdhocDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+        }
     }
 
     private void runAdhocUpdateTest(Test test) {

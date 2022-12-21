@@ -42,6 +42,12 @@ public class AdhocDAO {
     //STATEMENTS
     private PreparedStatement getAllAdhocIndividuals;
 
+    // CREATE TESTS
+    private PreparedStatement adHocWriteTestOne;
+    private PreparedStatement resetAdhocWriteTestOne;
+    private PreparedStatement adHocWriteTestTwo;
+    private PreparedStatement resetAdhocWriteTestTwo;
+
     // READ TESTS
     private PreparedStatement adHocReadTestOne;
     private PreparedStatement adHocReadTestTwo;
@@ -56,11 +62,13 @@ public class AdhocDAO {
     private PreparedStatement adhocUpdateTestTwo;
     private PreparedStatement resetAdhocUpdateTestTwo;
 
-    // WRITE TESTS
-    private PreparedStatement adHocWriteTestOne;
-    private PreparedStatement resetAdhocWriteTestOne;
-    private PreparedStatement adHocWriteTestTwo;
-    private PreparedStatement resetAdhocWriteTestTwo;
+    // DELETE TESTS
+    private PreparedStatement prepareAdhocDeleteTestOne;
+    private PreparedStatement adhocDeleteTestOne;
+    private PreparedStatement prepareAdhocDeleteTestTwo;
+    private PreparedStatement adhocDeleteTestTwo;
+
+
 
     private void prepareStatements() throws SQLException {
 
@@ -140,6 +148,11 @@ public class AdhocDAO {
                 "DELETE FROM " + COMPANIES_TABLE_NAME + " " +
                         "WHERE " + ORG_NUMBER_COL_NAME + " = '" + UNIQUE_COMPANY_NUMBER + "'"
         );
+
+        prepareAdhocDeleteTestOne = adHocWriteTestOne;
+        adhocDeleteTestOne = resetAdhocWriteTestOne;
+        prepareAdhocUpdateTestTwo = adHocWriteTestTwo;
+        adhocDeleteTestTwo = resetAdhocWriteTestTwo;
     }
 
     public AdhocDAO() throws AdhocDBException {
@@ -306,7 +319,6 @@ public class AdhocDAO {
 
     public void runAdhocWriteTestOne(Test test) throws AdhocDBException {
 
-        List<AdhocIndividual> individuals = new ArrayList<>();
         int updatedRows = 0;
 
         try {
@@ -422,5 +434,56 @@ public class AdhocDAO {
 
     private String getFailureMessage(Test test) {
         return "Failed to run" + test.getType() + "(#" +test.getTestNumber() + ") on " + test.getDb() + " database.";
+    }
+
+    public void runAdhocDeleteTestOne(Test test) throws AdhocDBException {
+        int updatedRows = 0;
+
+        try {
+            updatedRows = prepareAdhocDeleteTestOne.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+        // Restore conditions
+        try {
+            long start = System.nanoTime();
+            updatedRows = adhocDeleteTestOne.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+    }
+
+    public void runAdhocDeleteTestTwo(Test test) throws AdhocDBException {
+
+        int updatedRows = 0;
+
+        try {
+            updatedRows = prepareAdhocDeleteTestTwo.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+        // Restore conditions
+        try {
+            long start = System.nanoTime();
+            updatedRows = adhocDeleteTestTwo.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
     }
 }
