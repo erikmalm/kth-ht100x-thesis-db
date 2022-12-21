@@ -129,4 +129,11 @@ public class Controller {
         normDb.runNormUpdateTestTwo(test);
     }
 
+    public void runNormDeleteTestOne(Test test) throws NormDBException {
+        normDb.runNormDeleteTestOne(test);
+    }
+
+    public void runNormDeleteTestTwo(Test test) throws NormDBException {
+        normDb.runNormDeleteTestTwo(test);
+    }
 }

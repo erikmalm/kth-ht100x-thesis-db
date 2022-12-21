@@ -206,10 +206,32 @@ public class BlockingInterpreter {
 
     private void runNormTests(Test test) {
         switch (test.getType()) {
+            case "CREATE" -> runNormWriteTest(test);
             case "READ" -> runNormReadTest(test);
-            case "WRITE" -> runNormWriteTest(test);
             case "UPDATE" -> runNormUpdateTest(test);
+            case "DELETE" -> runNormDeleteTest(test);
             default -> {
+            }
+        }
+    }
+
+    private void runNormDeleteTest(Test test) {
+        switch(test.getTestNumber()) {
+            case 1 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormDeleteTestOne(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    for (int i = 0; i < test.getAmountOfTests(); i++)
+                        controller.runNormDeleteTestTwo(test);
+                } catch (NormDBException e) {
+                    System.out.println("Test failed " + e.getMessage());
+                }
             }
         }
     }
@@ -295,12 +317,16 @@ public class BlockingInterpreter {
 
     private void runAdhocTests(Test test) {
         switch (test.getType()) {
+            case "CREATE" -> runAdhocWriteTest(test);
             case "READ" -> runAdhocReadTest(test);
-            case "WRITE" -> runAdhocWriteTest(test);
             case "UPDATE" -> runAdhocUpdateTest(test);
+            case "DELETE" -> runAdhocDeleteTest(test);
             default -> {
             }
         }
+    }
+
+    private void runAdhocDeleteTest(Test test) {
     }
 
     private void runAdhocUpdateTest(Test test) {

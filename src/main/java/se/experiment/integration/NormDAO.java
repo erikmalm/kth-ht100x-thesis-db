@@ -52,6 +52,13 @@ public class NormDAO {
 
     // PREPARED STATEMENTS
 
+    // CREATE TESTS
+    private PreparedStatement normWriteTestOne;
+    private PreparedStatement resetNormWriteTestOne;
+
+    private PreparedStatement normWriteTestTwo;
+    private PreparedStatement resetNormWriteTestTwo;
+
     // READ TESTS
 
     private PreparedStatement normReadTestOne;
@@ -67,12 +74,12 @@ public class NormDAO {
     private PreparedStatement normUpdateTestTwo;
     private PreparedStatement resetNormUpdateTestTwo;
 
-    // WRITE TESTS
-    private PreparedStatement normWriteTestOne;
-    private PreparedStatement resetNormWriteTestOne;
+    // DELETE TESTS
+    private PreparedStatement prepareNormDeleteTestOne;
+    private PreparedStatement normDeleteTestOne;
+    private PreparedStatement prepareNormDeleteTestTwo;
+    private PreparedStatement normDeleteTestTwo;
 
-    private PreparedStatement normWriteTestTwo;
-    private PreparedStatement resetNormWriteTestTwo;
 
 
 
@@ -172,6 +179,10 @@ public class NormDAO {
                 "DELETE FROM " + COMPANY_TABLE_NAME + " " +
                         "WHERE " + VAT_NR_COL_NAME + " = '" + UNIQUE_COMPANY_VAT_NR + "'"
         );
+        prepareNormDeleteTestOne = normWriteTestOne;
+        normDeleteTestOne = resetNormWriteTestOne;
+        prepareNormDeleteTestTwo = normWriteTestTwo;
+        normDeleteTestTwo = resetNormWriteTestTwo;
 
     }
 
@@ -275,7 +286,6 @@ public class NormDAO {
 
     public void runNormWriteTestOne(Test test) throws NormDBException {
 
-        List<AdhocIndividual> individuals = new ArrayList<>();
         int updatedRows = 0;
 
         try {
@@ -430,5 +440,57 @@ public class NormDAO {
     }
 
 
+    public void runNormDeleteTestOne(Test test) throws NormDBException {
 
+        int updatedRows = 0;
+
+        // Prepare test
+        try {
+            updatedRows = prepareNormDeleteTestOne.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+        // Run test
+        try {
+            long start = System.nanoTime();
+            updatedRows = normDeleteTestOne.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+    }
+
+    public void runNormDeleteTestTwo(Test test) throws NormDBException {
+
+        int updatedRows = 0;
+
+        // Prepare test
+        try {
+            updatedRows = prepareNormDeleteTestTwo.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+        // Run test
+        try {
+            long start = System.nanoTime();
+            updatedRows = normDeleteTestTwo.executeUpdate();
+            connection.commit();
+            long end = System.nanoTime();
+            test.addExecutionTime(end - start);
+
+        } catch (SQLException e) {
+            handleException(getFailureMessage(test), e);
+        }
+
+    }
 }
